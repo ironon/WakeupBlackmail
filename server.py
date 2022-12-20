@@ -1,11 +1,25 @@
+from math import floor
 from flask import Flask, json, send_file
 import threading
 import time
 import datetime
+import os
+import random
+r = lambda: random.randint(0,255)
 
+subtitles = ["asdjhsdgfdfhg", "frick", "fudge", "there are so many david tickets out there holy crap"]
+descriptions = ["david needs to wake up", "sleephyhead daivd", "jlsdhfsdiufdsf did i really just give away a ticket because i SLEPT"]
 
-def DavidHasWokenUpLate():
-    
+def getSubtitle():
+    return subtitles[floor(random.random() * len(subtitles))]
+def getDesc():
+    return descriptions[floor(random.random() * len(descriptions))]
+
+def heWokeUpLate():
+    ## color subtitle desc
+    color = '#%02X%02X%02X' % (r(),r(),r())
+    # color = "orange"
+    os.system("node ticket \"" + getSubtitle() + "\" \"" + getDesc() + "\" \"" + color + "\"")
 
 
 
@@ -27,7 +41,8 @@ def deadlock():
     isPastWakeup = now > wakeup
     if isPastWakeup and not wokeup:
         wokeup = True
-        DavidHasWokenUpLate()
+        print("HE WOKE UP LATE!")
+        heWokeUpLate()
     if isNewDay():
         wokeup = False
     time.sleep(3)
