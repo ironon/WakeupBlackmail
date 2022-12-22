@@ -1,0 +1,17 @@
+{
+  "name": "imawake",
+  "version": "1.0.0",
+  "description": "blackmail.",
+  "main": "ticket.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Iron#3098",
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^2.10.2",
+    "firebase": "^9.15.0",
+    "firebase-admin": "^11.4.0",
+    "socket.io-client": "^4.5.4"
+  }
+}

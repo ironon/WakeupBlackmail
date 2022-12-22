@@ -1,0 +1,2 @@
+def isAwake():
+    return False
