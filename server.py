@@ -2,65 +2,79 @@ from math import floor
 from flask import Flask, json, send_file
 import threading
 import time
+from flask import request
 import datetime
 import os
+from urllib.parse import urljoin
+import bot
+import awake
 import random
-r = lambda: random.randint(0,255)
 
-subtitles = ["asdjhsdgfdfhg", "frick", "fudge", "there are so many david tickets out there holy crap"]
-descriptions = ["david needs to wake up", "sleephyhead daivd", "jlsdhfsdiufdsf did i really just give away a ticket because i SLEPT"]
+# globalURL = "http://127.0.0.1:5000"
+globalURL = "http://ec2-54-221-53-67.compute-1.amazonaws.com:5000/"
+discordThread = threading.Thread(target=bot.main)
+def onWakeup():
+    global ticketsEnabled
+    global currentTicketId
+    currentTicketId = getRandomTicketID()
+    ticketsEnabled = True
+    ticketURL = globalURL + "/tickets/" + str(currentTicketId)
+    return ticketURL
 
-def getSubtitle():
-    return subtitles[floor(random.random() * len(subtitles))]
-def getDesc():
-    return descriptions[floor(random.random() * len(descriptions))]
-
-def heWokeUpLate():
-    ## color subtitle desc
-    color = '#%02X%02X%02X' % (r(),r(),r())
-    # color = "orange"
-    os.system("node ticket \"" + getSubtitle() + "\" \"" + getDesc() + "\" \"" + color + "\"")
-
-
-
-wakeup = datetime.time(hour=20,minute=2,second=0,microsecond=0)
-wokeup = False
-lastKnownDate = datetime.datetime.now().date().day
-##CLOCK
-def isNewDay():
-    global lastKnownDate
-    currentDay = datetime.datetime.now().date().day
-    if lastKnownDate != currentDay:
-        lastKnownDate = currentDay
-        return True
-    return False
-
-def deadlock():
-    now = datetime.datetime.now().time()
-    global wokeup
-    isPastWakeup = now > wakeup
-    if isPastWakeup and not wokeup:
-        wokeup = True
-        print("HE WOKE UP LATE!")
-        heWokeUpLate()
-    if isNewDay():
-        wokeup = False
-    time.sleep(3)
-    deadlock()
-thread = threading.Thread(target=deadlock)
-thread.start()
-
+bot.setWakeupCallback(onWakeup)
+discordThread.start()
+getRandomTicketID = lambda: random.randint(100,100000)
+currentTicketId = getRandomTicketID()
+ticketsEnabled = True
 ##API
 api = Flask(__name__)
-@api.route("/", methods=["GET"])
+@api.route("/awake", methods=["GET"])
 def get_button_page():
     return send_file("index.html")
 
 @api.route("/safe", methods=["GET"])
 def safe():
-    wokeup = True
+    awake.wokeup = True
     return send_file("safe.html")
+
+def parseHTML():
+    f = open("ticket.html", "r")
+    string = f.read()
+    f.close()
+    imageurl = request.url_root  + "/images/"+str(currentTicketId)
+    print(imageurl)
+   
+    string = string.replace("REPLACEME", imageurl)
+    nf = open("./output/parsed.html", "w+")
+    nf.write(string)
+    nf.close()
+@api.route("/tickets/<int:idd>")
+def tickets(idd):
+    if idd == currentTicketId and ticketsEnabled:
+        parseHTML()
+        return send_file("output/parsed.html")
+    else:
+        return send_file("404.html")
+@api.route("/images/<int:idd>")
+def images(idd):
+    if idd == currentTicketId and ticketsEnabled:
+        parseHTML()
+        return send_file("output/latest.png")
+    else:
+        return send_file("404.html")
+
+@api.route("/reset/<int:idd>", methods=["GET"])
+def reset(idd):
+    global ticketsEnabled
+    if idd == currentTicketId:
+        print("RESET ALL TICKETS")
+        ticketsEnabled = False
+        return "0"
+    else:
+        return send_file("404.html")
+
 
 if __name__ == "__main__":
     api.run()
+
 

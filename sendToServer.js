@@ -21,7 +21,10 @@ const sendInfoToServer = (data) => {
     setTimeout(() => {
       ticketData = data
       set(reference, ticketData)
-    },3000)
+    },1500)
+    setTimeout(() => {
+      process.exit(0)
+    }, 3000)
     
 }
 

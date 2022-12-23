@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>claim ur ticket or smth</title>
+</head>
+<body>
+    <div id="ticketcontainer">
+        <p>OMG OGMDF CLAIM IT QUICK</p>
+        <div id="imgcontainer">
+            <img id="ticket" src="REPLACEME">
+        </div>
+        <a download="DavidTicketYAY.png" href="REPLACEME" title="DAVID TICKET!!">
+            <button id="claim">OMG ME WANT</button>
+        </a>
+    </div>
+</body>
+<style>
+    html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+    }
+    #ticketcontainer {
+        padding-top: 5vh;
+        display: flex;
+        justify-content: top;
+        align-items: center;
+        flex-direction: column;
+        background: linear-gradient(#aff0b8, #ebffbc);
+        width: 100%;
+        height: 100%;
+    }
+    #imgcontainer {
+        width: 40%;
+        height: 40%;
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        align-items: center;
+
+    }
+    #ticket {
+        height: 100%;
+        
+    }
+    #claim {
+        margin-top: 5vh;    
+        padding: 3vh;
+        font-size: 3vh;
+        background-color: #aff0b8;
+        border: 2px dashed green;
+        box-shadow: 1ch 1vh #9cb98b;
+    }
+    #claim:active {
+        margin-top: calc(5vh + 1vh);   
+        margin-left: 1ch; 
+        padding: 3vh;
+        font-size: 3vh;
+        background-color: #aff0b8;
+        border: 2px dashed green;
+        box-shadow: 0ch 0vh #9cb98b;
+    }
+</style>
+<script>
+    const button = document.querySelector("#claim")
+    button.addEventListener("click", async () => {
+        const text = document.querySelector("p")
+        const img = document.querySelector("#imgcontainer")
+        const button = document.querySelector("#claim")
+        text.innerText = "TICKET CLAIMED!!! ☠️"
+        button.remove()
+        img.remove()
+        const reseturl = window.location.href.replace("/tickets/", "/reset/")
+        console.log(reseturl)
+        await fetch(reseturl, {
+            method:"GET",
+
+        })
+
+    })
+</script>
+</html>
